@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: kaderisasi-hmtt
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 2 --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.6
+      - key: ASTERISK_SECRET
+        generateValue: true
+      - key: ASTERISK_ADMIN_USER
+        value: admin
+      - key: ASTERISK_ADMIN_PASS
+        sync: false   # diisi manual di dashboard Render saat deploy
+      - key: ASTERISK_CERT_DEFAULT
+        sync: false   # link e-certificate umum (boleh dikosongkan dulu)
