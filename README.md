@@ -12,6 +12,7 @@ Web online: https://opallep.github.io/KADERISASI-HMTT/
 
 - Tambah / hapus NIM: cukup edit Google Sheet (perubahan muncul dalam beberapa menit).
 - Isi link e-certificate: edit `docs/config.js` di GitHub → commit.
+- Nama peserta (ditampilkan saat lulus): `docs/peserta.js`. Salinan CSV `peserta_lulus.csv` bisa di-import ke versi Flask.
 - Branch `gh-pages` adalah salinan folder `docs/`; perbarui dengan
   `git subtree split --prefix docs -b gh-pages && git push -f origin gh-pages`,
   atau ubah sumber Pages ke `main` / `docs` di **Settings → Pages** agar cukup push ke `main`.

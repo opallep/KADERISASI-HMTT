@@ -171,6 +171,7 @@ input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(58, 123, 200
   border: 1px solid rgba(207, 226, 246, .45);
 }
 .result.lulus h3 { color: #fff; }
+.result.lulus .nama { display: block; color: var(--ice); font-size: 17px; margin: 6px 0 2px; }
 .result.lulus .btn { background: var(--accent); }
 .result.lulus .btn:hover { background: var(--accent-hover); }
 .result.gagal { background: rgba(255, 107, 107, .08); border: 1px solid rgba(255, 107, 107, .45); }
