@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cek Kelulusan Kaderisasi 2026</title>
+  <meta name="description" content="Pengumuman kelulusan Kaderisasi HMTT 2026">
+  <link rel="icon" type="image/png" href="img/asterisk.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="partners">
+    <div class="group">
+      <img src="img/hmtt.png" alt="Badan Pengurus HMTT 2026">
+      <img src="img/parivarta.png" alt="Kabinet Parivarta">
+    </div>
+    <img class="optst" src="img/optst.png" alt="optst">
+  </nav>
+
+  <main class="page">
+    <header class="brand">
+      <img class="logo" src="img/asterisk.png" alt="Logo Kaderisasi">
+      <div class="eyebrow">HMTT Proudly Present</div>
+      <h1>KADERISASI <span class="year">2026</span></h1>
+      <p>Pengumuman Kelulusan</p>
+    </header>
+
+    <section class="card">
+      <h2>Cek Kelulusan</h2>
+      <p class="sub">Masukkan NIM kamu untuk melihat hasil kaderisasi.</p>
+
+      <form id="cekForm" autocomplete="off">
+        <label for="nim">Nomor Induk Mahasiswa (NIM)</label>
+        <input type="text" id="nim" name="nim" placeholder="Contoh: 101012500002" required maxlength="30" inputmode="numeric">
+        <button type="submit" class="btn btn-primary btn-block" id="cekBtn">Cek Sekarang</button>
+      </form>
+
+      <div id="result" class="result hidden" aria-live="polite"></div>
+    </section>
+
+    <footer class="footer">Badan Pengurus HMTT 2026 &mdash; Kabinet Parivarta</footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

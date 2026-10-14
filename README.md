@@ -1,8 +1,24 @@
 # Web Cek Kelulusan Kaderisasi HMTT 2026
 
-Stack: **Flask (Python)** + **SQLite** + HTML/CSS/JS. Data NIM kelulusan disinkronkan otomatis dari Google Spreadsheet.
+Data NIM kelulusan diambil langsung dari Google Spreadsheet. Ada dua versi:
 
-## Menjalankan
+- **`docs/` — versi GitHub Pages (statis, yang dipakai online).** Browser peserta membaca Google Sheet langsung.
+  Pengaturan (link e-certificate) ada di [`docs/config.js`](docs/config.js).
+- **Root (`app.py`) — versi Flask + SQLite** dengan panel admin, untuk dijalankan di server sendiri.
+
+## GitHub Pages
+
+Web online: https://opallep.github.io/KADERISASI-HMTT/
+
+- Tambah / hapus NIM: cukup edit Google Sheet (perubahan muncul dalam beberapa menit).
+- Isi link e-certificate: edit `docs/config.js` di GitHub → commit.
+- Branch `gh-pages` adalah salinan folder `docs/`; perbarui dengan
+  `git subtree split --prefix docs -b gh-pages && git push -f origin gh-pages`,
+  atau ubah sumber Pages ke `main` / `docs` di **Settings → Pages** agar cukup push ke `main`.
+
+## Versi Flask
+
+### Menjalankan
 
 ```bash
 pip install -r requirements.txt
