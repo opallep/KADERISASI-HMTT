@@ -85,10 +85,11 @@ form.addEventListener("submit", async (e) => {
              📄 Lihat E-Certificate
            </a>`
         : `<p style="margin-top:12px">Link e-certificate akan segera dibagikan.</p>`;
+      const nama = (window.KADERISASI_PESERTA || {})[nim];
       show("lulus", `
         <div class="icon">🎉</div>
         <h3>SELAMAT ANDA LULUS KADERISASI</h3>
-        <p>NIM ${escapeHtml(nim)}</p>
+        <p>${nama ? `<strong class="nama">${escapeHtml(nama)}</strong><br>` : ""}NIM ${escapeHtml(nim)}</p>
         ${sertifikat}`);
     } else {
       show("gagal", `
