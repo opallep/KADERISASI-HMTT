@@ -16,7 +16,11 @@ from flask import (Flask, flash, g, jsonify, redirect, render_template,
                    request, session, url_for)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.environ.get("ASTERISK_DB", os.path.join(BASE_DIR, "asterisk.db"))
+# Di Vercel hanya /tmp yang bisa ditulis
+DB_PATH = os.environ.get(
+    "ASTERISK_DB",
+    "/tmp/asterisk.db" if os.environ.get("VERCEL") else os.path.join(BASE_DIR, "asterisk.db"),
+)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("ASTERISK_SECRET", "ganti-secret-key-ini")
@@ -29,6 +33,7 @@ DEFAULT_SHEET_URL = os.environ.get(
     "https://docs.google.com/spreadsheets/d/1sOJ2-r1G0W9Rhq_6RZRy1Equln1u6VcRG1klr5SP6A4/edit?gid=0#gid=0",
 )
 SYNC_INTERVAL = int(os.environ.get("ASTERISK_SYNC_INTERVAL", 300))  # detik
+RETRY_AFTER = 20  # detik, jeda coba ulang jika sinkron gagal
 
 NIM_PATTERN = re.compile(r"^[A-Za-z0-9.\-]{3,30}$")
 SHEET_NIM_PATTERN = re.compile(r"^\d{8,15}$")  # sel spreadsheet yang dianggap NIM
@@ -105,12 +110,19 @@ def sheet_csv_url(url):
             f"&gid={gid.group(1) if gid else 0}")
 
 
-def fetch_sheet_nims(url):
+def fetch_sheet_nims(url, attempts=3):
     """Ambil semua sel berisi angka NIM dari spreadsheet (tata letak bebas)."""
-    with urllib.request.urlopen(sheet_csv_url(url), timeout=15) as resp:
-        if "text/csv" not in resp.headers.get("Content-Type", ""):
-            raise RuntimeError("Spreadsheet tidak publik. Set share ke 'Anyone with the link'.")
-        text = resp.read().decode("utf-8-sig", errors="replace")
+    for i in range(attempts):
+        try:
+            with urllib.request.urlopen(sheet_csv_url(url), timeout=10) as resp:
+                if "text/csv" not in resp.headers.get("Content-Type", ""):
+                    raise RuntimeError("Spreadsheet tidak publik. Set share ke 'Anyone with the link'.")
+                text = resp.read().decode("utf-8-sig", errors="replace")
+            break
+        except OSError:  # timeout / koneksi putus: coba lagi
+            if i == attempts - 1:
+                raise
+            time.sleep(1)
     nims = set()
     for row in csv.reader(io.StringIO(text)):
         for cell in row:
@@ -122,7 +134,8 @@ def fetch_sheet_nims(url):
 
 def sync_from_sheet(force=False):
     """Sinkronkan NIM dari Google Sheet ke database. Return (ok, pesan)."""
-    if not _sync_lock.acquire(blocking=force):
+    # Tunggu sinkron yang sedang berjalan agar pengecekan tidak membaca database yang masih kosong
+    if not _sync_lock.acquire(timeout=30):
         return False, "Sinkronisasi sedang berjalan."
     try:
         with sqlite3.connect(DB_PATH) as db:
@@ -132,14 +145,16 @@ def sync_from_sheet(force=False):
             url = get_setting(db, "sheet_url")
             if not url:
                 return False, "Link spreadsheet belum diatur."
+            # Jika gagal: pakai data lama dan coba lagi setelah RETRY_AFTER detik
+            retry_mark = str(time.time() - SYNC_INTERVAL + RETRY_AFTER)
             try:
                 nims = fetch_sheet_nims(url)
-            except Exception as exc:  # jaringan / sheet privat: pakai data lama
-                set_setting(db, "last_sync", str(time.time()))
+            except Exception as exc:
+                set_setting(db, "last_sync", retry_mark)
                 set_setting(db, "last_sync_status", f"Gagal: {exc}")
                 return False, f"Gagal sinkron: {exc}"
             if not nims:
-                set_setting(db, "last_sync", str(time.time()))
+                set_setting(db, "last_sync", retry_mark)
                 set_setting(db, "last_sync_status", "Gagal: tidak ada NIM ditemukan di spreadsheet")
                 return False, "Tidak ada NIM ditemukan di spreadsheet, data lama dipertahankan."
 
@@ -187,6 +202,10 @@ def api_cek():
     sync_from_sheet()  # hanya benar-benar mengambil data jika sudah lewat SYNC_INTERVAL
 
     db = get_db()
+    # Database kosong (sinkron pertama gagal): jangan sampai peserta dinyatakan tidak lulus
+    if db.execute("SELECT COUNT(*) FROM peserta").fetchone()[0] == 0:
+        return jsonify(ok=False, message="Data kelulusan sedang dimuat. Coba lagi dalam beberapa detik."), 503
+
     row = db.execute("SELECT nim, nama, sertifikat FROM peserta WHERE nim = ?", (nim,)).fetchone()
 
     if row:

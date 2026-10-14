@@ -33,7 +33,7 @@ form.addEventListener("submit", async (e) => {
     if (!data.ok) {
       show("error", `
         <div class="icon">⚠️</div>
-        <h3>NIM Tidak Valid</h3>
+        <h3>${res.status === 503 ? "Mohon Tunggu" : "NIM Tidak Valid"}</h3>
         <p>${escapeHtml(data.message)}</p>`);
     } else if (data.lulus) {
       const nama = data.nama ? `<strong>${escapeHtml(data.nama)}</strong><br>` : "";

@@ -38,10 +38,24 @@ python app.py
 | `ASTERISK_DB` | Lokasi file database |
 | `PORT` | Port server (default 5000) |
 
-## Deploy ke Render (gratis)
+## Deploy ke Vercel (gratis, tanpa kartu kredit) — direkomendasikan
+
+1. Login https://vercel.com dengan akun GitHub → **Add New → Project** → import repo ini.
+2. Di **Environment Variables** isi:
+   - `ASTERISK_ADMIN_PASS` — password admin
+   - `ASTERISK_SECRET` — teks acak panjang (secret session)
+   - `ASTERISK_CERT_DEFAULT` — link e-certificate umum (opsional)
+3. Klik **Deploy**. Setiap push ke `main` otomatis di-deploy ulang.
+
+Catatan: database di Vercel bersifat sementara (`/tmp`), jadi kelola NIM lewat Google Sheet dan link
+sertifikat lewat `ASTERISK_CERT_DEFAULT`; perubahan dari panel admin tidak permanen.
+
+## Deploy ke Render (alternatif)
 
 1. Push repo ini ke GitHub.
 2. Buka https://dashboard.render.com → **New → Blueprint** → pilih repo ini (`render.yaml` terbaca otomatis).
+   Blueprint meminta kartu kredit; tanpa kartu pakai **New → Web Service**, instance *Free*, start command
+   `gunicorn app:app --bind 0.0.0.0:$PORT`, lalu isi environment variable secara manual.
 3. Isi `ASTERISK_ADMIN_PASS` (password admin) dan `ASTERISK_CERT_DEFAULT` (link e-certificate umum, boleh kosong) → **Apply**.
 4. Web online di `https://kaderisasi-hmtt.onrender.com` (nama bisa berbeda).
 
