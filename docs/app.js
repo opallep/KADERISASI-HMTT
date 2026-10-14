@@ -56,6 +56,20 @@ function certLink(nim) {
   return /^https?:\/\//.test(link) ? link : "";
 }
 
+async function unduh(button, nama, nim) {
+  button.disabled = true;
+  button.innerHTML = '<span class="spinner"></span> Menyiapkan sertifikat...';
+  try {
+    await buatSertifikat(nama, nim);
+    button.innerHTML = "✅ Sertifikat terunduh — unduh lagi";
+  } catch (err) {
+    console.error(err);
+    button.innerHTML = "⚠️ Gagal membuat sertifikat — coba lagi";
+  } finally {
+    button.disabled = false;
+  }
+}
+
 function show(type, html) {
   result.className = `result ${type}`;
   result.innerHTML = html;
@@ -79,18 +93,26 @@ form.addEventListener("submit", async (e) => {
     }
 
     if (nims.has(nim)) {
-      const link = certLink(nim);
-      const sertifikat = link
-        ? `<a class="btn btn-success" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">
-             📄 Lihat E-Certificate
-           </a>`
-        : `<p style="margin-top:12px">Link e-certificate akan segera dibagikan.</p>`;
       const nama = (window.KADERISASI_PESERTA || {})[nim];
+      // Prioritas: link khusus NIM > sertifikat otomatis (butuh nama) > link umum
+      const linkKhusus = CFG.sertifikatPerNim[nim];
+      const link = certLink(nim);
+      let sertifikat;
+      if (!linkKhusus && nama && CFG.sertifikatOtomatis !== false) {
+        sertifikat = `<button type="button" class="btn btn-success" id="unduhSertifikat">📄 Download E-Certificate</button>`;
+      } else if (link) {
+        sertifikat = `<a class="btn btn-success" href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">
+             📄 Lihat E-Certificate
+           </a>`;
+      } else {
+        sertifikat = `<p style="margin-top:12px">Link e-certificate akan segera dibagikan.</p>`;
+      }
       show("lulus", `
         <div class="icon">🎉</div>
         <h3>SELAMAT ANDA LULUS KADERISASI</h3>
         <p>${nama ? `<strong class="nama">${escapeHtml(nama)}</strong><br>` : ""}NIM ${escapeHtml(nim)}</p>
         ${sertifikat}`);
+      document.getElementById("unduhSertifikat")?.addEventListener("click", (ev) => unduh(ev.currentTarget, nama, nim));
     } else {
       show("gagal", `
         <div class="icon">😔</div>

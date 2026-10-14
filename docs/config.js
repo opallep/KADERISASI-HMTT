@@ -5,7 +5,11 @@ window.KADERISASI_CONFIG = {
   sheetId: "1sOJ2-r1G0W9Rhq_6RZRy1Equln1u6VcRG1klr5SP6A4",
   gid: "0",
 
-  // Link e-certificate umum untuk semua peserta lulus (kosongkan jika belum ada).
+  // true = web membuat e-certificate PDF otomatis (nama + NIM) dari sertifikat/template.pdf
+  // untuk peserta yang namanya ada di peserta.js.
+  sertifikatOtomatis: true,
+
+  // Link e-certificate umum (dipakai jika sertifikat otomatis mati / nama peserta tidak ada).
   // Tulisan {nim} akan diganti NIM peserta, contoh: "https://drive.google.com/.../{nim}.pdf"
   sertifikatDefault: "",
 

@@ -11,7 +11,10 @@ Data NIM kelulusan diambil langsung dari Google Spreadsheet. Ada dua versi:
 Web online: https://opallep.github.io/KADERISASI-HMTT/
 
 - Tambah / hapus NIM: cukup edit Google Sheet (perubahan muncul dalam beberapa menit).
-- Isi link e-certificate: edit `docs/config.js` di GitHub → commit.
+- **E-certificate otomatis:** peserta lulus yang namanya ada di `docs/peserta.js` mendapat tombol
+  *Download E-Certificate*; PDF (nama + NIM) dibuat langsung di browser dari `docs/sertifikat/template.pdf`
+  (font Lora Bold & Poppins Medium, library pdf-lib di `docs/vendor/`). Atur di `docs/sertifikat.js`.
+- Link e-certificate manual (opsional, menggantikan sertifikat otomatis): edit `docs/config.js` → commit.
 - Nama peserta (ditampilkan saat lulus): `docs/peserta.js`. Salinan CSV `peserta_lulus.csv` bisa di-import ke versi Flask.
 - Branch `gh-pages` adalah salinan folder `docs/`; perbarui dengan
   `git subtree split --prefix docs -b gh-pages && git push -f origin gh-pages`,
