@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.db
+.venv/
+venv/
+.env
+cap/
+sertifikat_pdf/
+peserta_lulus.csv

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Admin Kaderisasi</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/asterisk.png') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page">
+    <header class="brand">
+      <img class="logo" src="{{ url_for('static', filename='img/asterisk.png') }}" alt="Logo Kaderisasi">
+      <h1>KADERISASI <span class="year">2026</span></h1>
+      <p>Panel Admin</p>
+    </header>
+
+    <section class="card">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+      {% endwith %}
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-row">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autocomplete="username">
+        </div>
+        <div class="form-row">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Masuk</button>
+      </form>
+    </section>
+
+    <footer class="footer"><a href="{{ url_for('index') }}">&larr; Kembali ke halaman cek kelulusan</a></footer>
+  </main>
+</body>
+</html>
